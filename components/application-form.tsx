@@ -644,11 +644,12 @@ export function ApplicationForm() {
                     Choose Your Website Plan
                   </h3>
                   <p className="text-muted-foreground text-xs mt-2 max-w-md mx-auto">
-                    The Website Maintenance Plan is included in all plans.
+                    Every option includes the $25/month Website Maintenance
+                    Plan.
                   </p>
                   <p className="text-muted-foreground text-xs mt-2 max-w-md mx-auto">
-                    Stay with the $25/month Website Maintenance Plan, or choose
-                    an upgrade for extra help.
+                    Stay with the basic plan, or choose an upgrade for extra
+                    help.
                   </p>
                   <p className="text-muted-foreground text-xs mt-2 max-w-md mx-auto">
                     Then tap{" "}
