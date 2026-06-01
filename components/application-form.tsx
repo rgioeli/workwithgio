@@ -640,9 +640,17 @@ export function ApplicationForm() {
                 className="space-y-6"
               >
                 <div className="text-center">
-                  <h3 className="text-lg font-semibold mb-2 -mt-5">
-                    Choose Your Website Plan
-                  </h3>
+                  <div className="mb-2 -mt-5 flex items-center justify-center gap-2">
+                    <span className="text-lg font-semibold ">
+                      Choose Your Website Plan
+                    </span>{" "}
+                    <Badge
+                      variant="outline"
+                      className="border border-primary bg-primary/75 text-white"
+                    >
+                      4 Options
+                    </Badge>
+                  </div>
                   <p className="text-muted-foreground text-xs mt-2 max-w-md mx-auto">
                     Every option includes the $25/month Website Maintenance
                     Plan.
@@ -736,7 +744,7 @@ export function ApplicationForm() {
                               <span className="text-xs flex items-center gap-1 border border-green-500 bg-green-500/10 text-green-500 rounded-md p-2 mb-1">
                                 <ShieldCheck className="w-5 h-5 text-green-500" />{" "}
                                 Includes the $25/month Website Maintenance Plan
-                                Promotion.
+                                + this upgrade.
                               </span>
 
                               {plan.additionalPrice && (
