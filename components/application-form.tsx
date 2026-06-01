@@ -37,11 +37,7 @@ const steps = [
   { number: 7, title: "Review" },
 ]
 
-interface ApplicationFormProps {
-  progressRef?: React.RefObject<HTMLDivElement | null>
-}
-
-export function ApplicationForm({ progressRef }: ApplicationFormProps) {
+export function ApplicationForm() {
   const [currentStep, setCurrentStep] = useState(1)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
@@ -53,6 +49,7 @@ export function ApplicationForm({ progressRef }: ApplicationFormProps) {
   const stepHeaderRef = useRef<HTMLDivElement>(null)
   const successRef = useRef<HTMLDivElement>(null)
   const cardRef = useRef<HTMLDivElement>(null)
+  const shouldScrollAfterStepChange = useRef(false)
 
   const {
     register,
@@ -92,25 +89,31 @@ export function ApplicationForm({ progressRef }: ApplicationFormProps) {
   const selectedAddOns = watch("selectedAddOns") || []
   const termsAccepted = watch("termsAccepted")
 
-  // Scroll to top of step area for early steps (1-3)
-  const scrollToStepHeader = () => {
-    if (stepHeaderRef.current) {
-      stepHeaderRef.current.scrollIntoView({
+  // Scroll to step header after step changes (uses requestAnimationFrame for reliable timing)
+  useEffect(() => {
+    if (!shouldScrollAfterStepChange.current) return
+    
+    shouldScrollAfterStepChange.current = false
+    
+    requestAnimationFrame(() => {
+      stepHeaderRef.current?.scrollIntoView({
         behavior: "smooth",
         block: "start",
       })
-    }
-  }
+    })
+  }, [currentStep])
 
-  // Scroll success message to center of viewport
-  const scrollToSuccess = () => {
-    if (successRef.current) {
-      successRef.current.scrollIntoView({
+  // Scroll to success message when submitted
+  useEffect(() => {
+    if (!isSubmitted) return
+    
+    requestAnimationFrame(() => {
+      successRef.current?.scrollIntoView({
         behavior: "smooth",
         block: "center",
       })
-    }
-  }
+    })
+  }, [isSubmitted])
 
   // Track form visibility for mobile sticky nav
   useEffect(() => {
@@ -161,17 +164,15 @@ export function ApplicationForm({ progressRef }: ApplicationFormProps) {
     e.preventDefault()
     const isValid = await validateStep(currentStep)
     if (isValid && currentStep < 7) {
+      shouldScrollAfterStepChange.current = true
       setCurrentStep((prev) => prev + 1)
-      // Always scroll to progress bar when advancing via Continue button
-      setTimeout(scrollToStepHeader, 100)
     }
   }
 
   const prevStep = () => {
     if (currentStep > 1) {
+      shouldScrollAfterStepChange.current = true
       setCurrentStep((prev) => prev - 1)
-      // Always scroll to progress bar when going back
-      setTimeout(scrollToStepHeader, 100)
     }
   }
 
@@ -188,9 +189,8 @@ export function ApplicationForm({ progressRef }: ApplicationFormProps) {
     // Auto-advance for steps 1-3 (Business Type, Challenges, Goals)
     if (autoAdvance && currentStep < 4) {
       setTimeout(() => {
+        shouldScrollAfterStepChange.current = true
         setCurrentStep((prev) => prev + 1)
-        // Scroll after advancing
-        setTimeout(scrollToStepHeader, 100)
       }, 300) // Small delay for visual feedback
     }
   }
@@ -229,8 +229,6 @@ export function ApplicationForm({ progressRef }: ApplicationFormProps) {
       }
 
       setIsSubmitted(true)
-      // Scroll to success message after state updates
-      setTimeout(scrollToSuccess, 100)
     } catch (error) {
       setSubmitError(
         error instanceof Error
@@ -294,7 +292,7 @@ export function ApplicationForm({ progressRef }: ApplicationFormProps) {
         </div> */}
 
         {/* Progress Bar */}
-        <div ref={progressRef || stepHeaderRef} className="mt-6">
+        <div ref={stepHeaderRef} className="mt-6 scroll-mt-4">
           <div className="flex justify-between text-xs text-muted-foreground mb-2">
             <span>Step {currentStep} of {steps.length}</span>
             <span>{Math.round((currentStep / steps.length) * 100)}% Complete</span>

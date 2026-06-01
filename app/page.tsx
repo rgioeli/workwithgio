@@ -18,12 +18,10 @@ import { Footer } from "@/components/footer"
 
 export default function Home() {
   const formRef = useRef<HTMLDivElement>(null)
-  const progressRef = useRef<HTMLDivElement>(null)
   const heroApplyButtonRef = useRef<HTMLButtonElement>(null)
 
   const scrollToForm = () => {
-    // Scroll to progress bar for better mobile UX
-    progressRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })
+    formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })
   }
 
   return (
@@ -44,7 +42,7 @@ export default function Home() {
       <section ref={formRef} id="apply" className="py-20 lg:py-28">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
-            <ApplicationForm progressRef={progressRef} />
+            <ApplicationForm />
           </div>
         </div>
       </section>
