@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { motion, AnimatePresence } from "framer-motion"
-import { ChevronLeft, ChevronRight, Check, Loader2, Home, Sparkles, ChevronDown } from "lucide-react"
+import { ChevronLeft, ChevronRight, Check, Loader2, Home, Sparkles, ChevronDown, Zap } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -27,6 +27,7 @@ import {
   type PlanId,
 } from "@/lib/validations/giveaway-application"
 import { trackMetaEvent, trackMetaLead } from "@/lib/facebook/trackMetaEvent"
+import { Badge } from "./ui/badge"
 
 const steps = [
   { number: 1, title: "Business Type" },
@@ -566,17 +567,13 @@ const markApplicationStarted = () => {
                 transition={{ duration: 0.3 }}
                 className="space-y-6"
               >
-                <div className="text-center mb-8">
-                  <h3 className="text-xl font-semibold mb-2">Choose Your Website Plan</h3>
+                <div className="text-center">
+                  <h3 className="text-lg font-semibold mb-2 -mt-5">Choose Your Website Plan</h3>
                   <p className="text-muted-foreground text-sm">Website Maintenance Plan is included. Upgrade for additional services.</p>
                   <p className="text-muted-foreground text-xs mt-2 max-w-md mx-auto">
-                    Tap a plan, then hit Continue. You can change your selection later if approved.
+                    <span className="font-bold text-primary">Tap a plan</span>, then hit <span className="font-bold text-primary">Continue</span>. You can change your selection later if approved.
                   </p>
                 </div>
-                
-                <p className="text-xs text-center text-muted-foreground mb-4 md:hidden">
-                  There are multiple plan options below. Scroll to compare.
-                </p>
                 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                   {servicePlans.map((plan) => {
@@ -630,12 +627,14 @@ const markApplicationStarted = () => {
                           </div>
                         )}
 
-                        <div className="flex items-start justify-between mb-3">
-                          <div>
+                        <div className="flex mb-3">
+                          <div className="flex flex-col">
+                            <div className="flex">
                             <span className="text-2xl mr-2">{plan.icon}</span>
                             <span className="font-bold text-lg">{plan.name}</span>
+                            </div>
                             {plan.isRequired && (
-                              <span className="ml-2 text-xs bg-muted px-2 py-0.5 rounded">Required</span>
+                              <Badge variant="outline" className="border border-primary bg-primary/75"><span className="text-xs flex items-center gap-1 px-2 py-0.5 rounded text-white"><Zap className="w-3 h-3" /> Featured Promotion</span></Badge>
                             )}
                           </div>
                         </div>
