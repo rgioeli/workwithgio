@@ -709,7 +709,7 @@ const markApplicationStarted = () => {
                           }`}
                         >
                           {plan.isRequired
-                            ? isSelected ? "Selected (Required)" : "Required Plan"
+                            ? isSelected ? "Selected" : "Tap to Select"
                             : isSelected
                             ? "Selected"
                             : "Tap to Select"}
