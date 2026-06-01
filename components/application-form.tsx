@@ -72,11 +72,13 @@ const markApplicationStarted = () => {
   ]
   
   useEffect(() => {
+    if (!isFormVisible) return
+  
     trackMetaEvent("ApplicationStepViewed", {
       step_index: currentStep,
       step_name: stepNames[currentStep - 1],
     })
-  }, [currentStep])
+  }, [currentStep, isFormVisible])
 
   const {
     register,
@@ -730,6 +732,7 @@ const markApplicationStarted = () => {
                           const isCurrentlySelected = selectedAddOns.includes(addOn.id)
 
                           trackMetaEvent("AddOnToggled", {
+                            add_on_id: addOn.id,
                             add_on_label: addOn.label,
                             selected: !isCurrentlySelected,
                           })
