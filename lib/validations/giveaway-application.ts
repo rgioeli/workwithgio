@@ -60,11 +60,13 @@ export const servicePlans = [
     id: "foundation",
     name: "Website Maintenance Plan",
     shortName: "Website Maintenance",
+    additionalPrice: 0,
     price: 25,
     isRequired: true,
     icon: "🌐",
     color: "red",
     description: "The Website Maintenance Plan keeps your website online, secure, updated, and maintained for just $25/month.",
+    includesPrevious: false,
     features: [
       "Professional Website",
       "Menu, Product, or Services Section (based on your business)",
@@ -73,11 +75,14 @@ export const servicePlans = [
       "Contact Form",
       "Security & Reliability"
     ],
+    popular: false
   },
+
   {
     id: "grow",
     name: "Website Updates",
     price: 50,
+    isRequired: false,
     additionalPrice: 25,
     icon: "🌱",
     color: "green",
@@ -92,11 +97,13 @@ export const servicePlans = [
       "Priority Support",
     ],
     includesPrevious: true,
+    popular: false
   },
   {
     id: "scale",
     name: "Marketing & Branding",
     price: 149,
+    isRequired: false,
     additionalPrice: 124,
     icon: "📈",
     color: "blue",
@@ -120,6 +127,7 @@ export const servicePlans = [
     id: "growth_engine",
     name: "Lead Generation & Automation",
     price: 297,
+    isRequired: false,
     additionalPrice: 272,
     icon: "🚀",
     color: "gold",
@@ -133,6 +141,7 @@ export const servicePlans = [
       "Monthly Growth Consultation",
     ],
     includesPrevious: true,
+    popular: false
   },
 ] as const
 

@@ -26,6 +26,7 @@ import {
   type ClientFormData,
   type PlanId,
 } from "@/lib/validations/giveaway-application"
+import { trackMetaEvent, trackMetaLead } from "@/lib/facebook/trackMetaEvent"
 
 const steps = [
   { number: 1, title: "Business Type" },
@@ -50,6 +51,32 @@ export function ApplicationForm() {
   const successRef = useRef<HTMLDivElement>(null)
   const cardRef = useRef<HTMLDivElement>(null)
   const shouldScrollAfterStepChange = useRef(false)
+
+  const hasStartedApplication = useRef(false)
+
+const markApplicationStarted = () => {
+  if (!hasStartedApplication.current) {
+    hasStartedApplication.current = true
+    trackMetaEvent("ApplicationStarted")
+  }
+}
+
+  const stepNames = [
+    "Business Type",
+    "Challenges",
+    "Goals",
+    "Plan Selection",
+    "Optional Add Ons",
+    "Contact Information",
+    "Review",
+  ]
+  
+  useEffect(() => {
+    trackMetaEvent("ApplicationStepViewed", {
+      step_index: currentStep,
+      step_name: stepNames[currentStep - 1],
+    })
+  }, [currentStep])
 
   const {
     register,
@@ -228,8 +255,23 @@ export function ApplicationForm() {
         throw new Error(result.message || "Submission failed")
       }
 
+      trackMetaEvent("ApplicationSubmitted", {
+        selected_plan: data.selectedPlan,
+        add_ons_count: data.selectedAddOns?.length || 0,
+      })
+      
+      trackMetaLead({
+        selected_plan: data.selectedPlan,
+        add_ons_count: data.selectedAddOns?.length || 0,
+      })
+
       setIsSubmitted(true)
     } catch (error) {
+      trackMetaEvent("ApplicationSubmitFailed", {
+        step_index: currentStep,
+        step_name: stepNames[currentStep - 1],
+        selected_plan: data.selectedPlan,
+      })
       setSubmitError(
         error instanceof Error
           ? error.message
@@ -361,7 +403,11 @@ export function ApplicationForm() {
                     <motion.button
                       key={type.value}
                       type="button"
-                      onClick={() => handleOptionSelect("businessType", type.value, type.value !== "other")}
+                      onClick={() => {
+                        markApplicationStarted()
+                        trackMetaEvent("BusinessTypeSelected", { businessType: type.value })
+                        handleOptionSelect("businessType", type.value, type.value !== "other")
+                      }}
                       className={`p-4 rounded-lg border-2 transition-all text-left ${
                         selectedBusinessType === type.value
                           ? "border-primary bg-primary/5"
@@ -417,7 +463,10 @@ export function ApplicationForm() {
                     <motion.button
                       key={challenge.value}
                       type="button"
-                      onClick={() => handleOptionSelect("biggestChallenge", challenge.value, challenge.value !== "other")}
+                      onClick={() => {
+                        trackMetaEvent("ChallengeSelected", { biggestChallenge: challenge.value })
+                        handleOptionSelect("biggestChallenge", challenge.value, challenge.value !== "other")
+                      }}
                       className={`p-4 rounded-lg border-2 transition-all text-left flex items-center gap-3 ${
                         selectedChallenge === challenge.value
                           ? "border-primary bg-primary/5"
@@ -473,7 +522,10 @@ export function ApplicationForm() {
                     <motion.button
                       key={goal.value}
                       type="button"
-                      onClick={() => handleOptionSelect("websiteGoal", goal.value, true)}
+                      onClick={() => {
+                        trackMetaEvent("WebsiteGoalSelected", { websiteGoal: goal.value })
+                        handleOptionSelect("websiteGoal", goal.value, true)
+                      }}
                       className={`p-4 rounded-lg border-2 transition-all text-left ${
                         selectedGoal === goal.value
                           ? "border-primary bg-primary/5"
@@ -535,17 +587,18 @@ export function ApplicationForm() {
                     }
 
                     return (
-                      <motion.button
+                      <motion.div
                         key={plan.id}
-                        type="button"
-                        onClick={() => handlePlanSelect(plan.id)}
+                        onClick={() => {
+                          trackMetaEvent("PlanSelected", { plan: plan.id })
+                          handlePlanSelect(plan.id)
+                        }}
                         aria-pressed={isSelected}
                         className={`relative rounded-xl border-2 p-5 transition-all text-left w-full cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
                           isSelected
                             ? `${colorClasses[plan.color]} ${bgColorClasses[plan.color]}`
                             : "border-border hover:border-muted-foreground/50"
                         }`}
-                        whileHover={{ scale: 1.01 }}
                         animate={isSelected ? { scale: 1.02 } : { scale: 1 }}
                       >
                         {/* Selected Checkmark */}
@@ -644,7 +697,7 @@ export function ApplicationForm() {
                             ? "Selected"
                             : "Tap to Select"}
                         </div>
-                      </motion.button>
+                      </motion.div>
                     )
                   })}
                 </div>
@@ -673,7 +726,16 @@ export function ApplicationForm() {
                       <motion.button
                         key={addOn.id}
                         type="button"
-                        onClick={() => handleAddOnToggle(addOn.id)}
+                        onClick={() => {
+                          const isCurrentlySelected = selectedAddOns.includes(addOn.id)
+
+                          trackMetaEvent("AddOnToggled", {
+                            add_on_label: addOn.label,
+                            selected: !isCurrentlySelected,
+                          })
+
+                          handleAddOnToggle(addOn.id)
+                        }}
                         className={`w-full p-4 rounded-lg border-2 transition-all text-left flex items-center justify-between ${
                           isSelected
                             ? "border-primary bg-primary/5"
@@ -720,6 +782,7 @@ export function ApplicationForm() {
                     <Input
                       id="fullName"
                       placeholder="John Smith"
+                      
                       {...register("fullName")}
                       className={errors.fullName ? "border-destructive" : ""}
                     />
@@ -882,6 +945,7 @@ export function ApplicationForm() {
                       id="termsAccepted"
                       checked={termsAccepted === true}
                       onCheckedChange={(checked) => {
+                        trackMetaEvent("TermsAccepted", { termsAccepted: checked, selected_plan: selectedPlan })
                         setValue("termsAccepted", checked === true ? true : false as never, { shouldValidate: true })
                       }}
                     />
@@ -976,7 +1040,9 @@ export function ApplicationForm() {
               ) : (
                 <Button
                   type="button"
-                  onClick={() => formRef.current?.requestSubmit()}
+                  onClick={() => {
+                    formRef.current?.requestSubmit()
+                  }}
                   disabled={isSubmitting || !termsAccepted}
                   className="flex-1 py-6 text-base font-semibold"
                 >

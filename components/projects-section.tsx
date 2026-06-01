@@ -3,8 +3,23 @@
 import { motion } from "framer-motion"
 import { ExternalLink } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
+import { trackMetaEvent } from "@/lib/facebook/trackMetaEvent"
 
 const projects = [
+  {
+    name: "The Contracting Company",
+    url: "https://thecontractingco.com",
+    description:
+      "Contractor website with lead generation systems, appointment scheduling, and customer inquiry workflows.",
+    tags: ["Contractor", "Lead Generation", "Scheduling"],
+  },
+  {
+    name: "Firehouse BBQ & Blues",
+    url: "https://firehousebbqandblues.com",
+    description:
+      "Restaurant website showcasing menu information, events, hiring information, and customer engagement.",
+    tags: ["Restaurant", "Hospitality", "Web Design"],
+  },
   {
     name: "Manpower Richmond",
     url: "https://mprichmond.com",
@@ -27,25 +42,11 @@ const projects = [
     tags: ["Pest Control", "Lead Generation", "Service Business"],
   },
   {
-    name: "The Contracting Company",
-    url: "https://thecontractingco.com",
-    description:
-      "Contractor website with lead generation systems, appointment scheduling, and customer inquiry workflows.",
-    tags: ["Contractor", "Lead Generation", "Scheduling"],
-  },
-  {
     name: "Legacy Cleaning Services",
     url: "https://legacycleaningservices.site",
     description:
       "Professional cleaning company website focused on service presentation and customer inquiries.",
     tags: ["Cleaning Company", "Local Business", "Lead Generation"],
-  },
-  {
-    name: "Firehouse BBQ & Blues",
-    url: "https://firehousebbqandblues.com",
-    description:
-      "Restaurant website showcasing menu information, events, hiring information, and customer engagement.",
-    tags: ["Restaurant", "Hospitality", "Web Design"],
   },
 ]
 
@@ -84,6 +85,9 @@ export function ProjectsSection() {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="relative aspect-video bg-foreground overflow-hidden block cursor-pointer"
+                  onClick={() => {
+                    trackMetaEvent("PortfolioProjectViewed", { project: project.name })
+                  }}
                 >
                   {/* Diagonal accent stripe */}
                   <div className="absolute -right-12 -top-12 w-32 h-32 bg-primary rotate-45" />
@@ -118,6 +122,9 @@ export function ProjectsSection() {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-sm text-primary hover:underline mb-3"
+                    onClick={() => {
+                      trackMetaEvent("PortfolioProjectViewed", { project: project.name })
+                    }}
                   >
                     {new URL(project.url).hostname}
                   </a>

@@ -5,6 +5,7 @@ import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { forwardRef } from "react"
+import { trackMetaEvent } from "@/lib/facebook/trackMetaEvent"
 
 interface HeroSectionProps {
   onApplyClick: () => void
@@ -71,7 +72,10 @@ export const HeroSection = forwardRef<HTMLButtonElement, HeroSectionProps>(
               <Button
                 ref={applyButtonRef || ref}
                 size="lg"
-                onClick={onApplyClick}
+                onClick={() => {
+                  trackMetaEvent("HeroSectionApplyNowClicked")
+                  onApplyClick()
+                }}
                 className="text-lg px-8 py-6 font-semibold"
               >
                 Apply Now

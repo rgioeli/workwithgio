@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { motion, AnimatePresence } from "framer-motion"
 import { useState, useEffect, useCallback } from "react"
+import { trackMetaEvent } from "@/lib/facebook/trackMetaEvent"
 
 interface MobileStickyCtaProps {
   onApplyClick: () => void
@@ -73,7 +74,10 @@ export function MobileStickyCta({
           className="fixed bottom-0 left-0 right-0 p-4 bg-background/95 backdrop-blur-sm border-t border-border md:hidden z-50"
         >
           <Button 
-            onClick={onApplyClick} 
+            onClick={() => {
+              trackMetaEvent("MobileStickyCtaApplyNowClicked")
+              onApplyClick()
+            }} 
             className="w-full py-6 text-lg font-semibold"
           >
             Apply Now
