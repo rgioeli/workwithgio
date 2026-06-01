@@ -14,6 +14,7 @@ import {
   ChevronDown,
   Zap,
   ShieldCheck,
+  Plus,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -44,6 +45,7 @@ import {
 } from "@/lib/validations/giveaway-application";
 import { trackMetaEvent, trackMetaLead } from "@/lib/facebook/trackMetaEvent";
 import { Badge } from "./ui/badge";
+import { Separator } from "./ui/separator";
 
 const steps = [
   { number: 1, title: "Business Type" },
@@ -641,14 +643,16 @@ export function ApplicationForm() {
                   <h3 className="text-lg font-semibold mb-2 -mt-5">
                     Choose Your Website Plan
                   </h3>
-                  <p className="text-muted-foreground text-sm">
-                    Website Maintenance Plan is included.
+                  <p className="text-muted-foreground text-xs mt-2 max-w-md mx-auto">
+                    The Website Maintenance Plan is included in all plans.
                   </p>
                   <p className="text-muted-foreground text-xs mt-2 max-w-md mx-auto">
-                    <span className="font-bold text-primary">Tap a plan</span>,
-                    then hit{" "}
+                    Stay with the $25/month Website Maintenance Plan, or choose
+                    an upgrade for extra help.
+                  </p>
+                  <p className="text-muted-foreground text-xs mt-2 max-w-md mx-auto">
+                    Then tap{" "}
                     <span className="font-bold text-primary">Continue</span>.
-                    You can change your selection later if approved.
                   </p>
                 </div>
 
@@ -686,7 +690,7 @@ export function ApplicationForm() {
                           isSelected
                             ? `${colorClasses[plan.color]} ${bgColorClasses[plan.color]}`
                             : "border-border hover:border-muted-foreground/50"
-                        }`}
+                        } ${plan.popular ? "mt-3" : ""}`}
                         animate={isSelected ? { scale: 1.02 } : { scale: 1 }}
                       >
                         {/* Selected Checkmark */}
@@ -733,17 +737,25 @@ export function ApplicationForm() {
                                 Includes the $25/month Website Maintenance Plan
                                 Promotion.
                               </span>
-                              <div className="flex items-center gap-1">
-                                <span className="text-2xl font-bold">
-                                  +${plan.additionalPrice}
-                                </span>
-                                <span className="text-muted-foreground">
-                                  /month
-                                </span>
-                              </div>
-                              <p className="text-sm text-muted-foreground">
-                                (${plan.price}/month total)
-                              </p>
+
+                              {plan.additionalPrice && (
+                                <div className="my-1">
+                                  <div className="flex items-baseline gap-1">
+                                    <span className="flex items-center gap-1">
+                                      <span className="text-2xl font-bold">
+                                        +${plan.additionalPrice}
+                                      </span>
+                                    </span>
+                                    <span className="text-muted-foreground">
+                                      /month
+                                    </span>
+                                  </div>
+
+                                  <p className="text-sm flex items-center gap-1 text-muted-foreground">
+                                    ${plan.price}/month total
+                                  </p>
+                                </div>
+                              )}
                             </div>
                           ) : (
                             <div>
