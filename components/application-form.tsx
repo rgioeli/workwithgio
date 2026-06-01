@@ -50,6 +50,7 @@ export function ApplicationForm() {
   const stepHeaderRef = useRef<HTMLDivElement>(null)
   const successRef = useRef<HTMLDivElement>(null)
   const cardRef = useRef<HTMLDivElement>(null)
+  const continueButtonRef = useRef<HTMLDivElement>(null)
   const shouldScrollAfterStepChange = useRef(false)
 
   const hasStartedApplication = useRef(false)
@@ -226,6 +227,13 @@ const markApplicationStarted = () => {
 
   const handlePlanSelect = (planId: PlanId) => {
     setValue("selectedPlan", planId, { shouldValidate: true })
+    // On mobile, scroll to Continue button after plan selection
+    setTimeout(() => {
+      continueButtonRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      })
+    }, 150)
   }
 
   const handleAddOnToggle = (addOnId: string) => {
@@ -562,9 +570,13 @@ const markApplicationStarted = () => {
                   <h3 className="text-xl font-semibold mb-2">Choose Your Website Plan</h3>
                   <p className="text-muted-foreground text-sm">Website Maintenance Plan is included. Upgrade for additional services.</p>
                   <p className="text-muted-foreground text-xs mt-2 max-w-md mx-auto">
-                    Many businesses choose optional services to keep their website updated, stay active on social media, and generate more opportunities online.
+                    Tap a plan, then hit Continue. You can change your selection later if approved.
                   </p>
                 </div>
+                
+                <p className="text-xs text-center text-muted-foreground mb-4 md:hidden">
+                  There are multiple plan options below. Scroll to compare.
+                </p>
                 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                   {servicePlans.map((plan) => {
@@ -657,13 +669,17 @@ const markApplicationStarted = () => {
                         )}
 
                         <ul className="space-y-1.5 mb-4 text-sm">
-                          {(expandedPlan === plan.id ? plan.features : plan.features.slice(0, 4)).map((feature, idx) => (
+                          {/* Show 3 features on mobile, 4 on desktop when not expanded */}
+                          {(expandedPlan === plan.id 
+                            ? plan.features 
+                            : plan.features.slice(0, typeof window !== 'undefined' && window.innerWidth < 768 ? 3 : 4)
+                          ).map((feature, idx) => (
                             <li key={idx} className="flex items-start gap-2">
                               <Check className="w-4 h-4 text-green-500 shrink-0 mt-0.5" />
                               <span>{feature}</span>
                             </li>
                           ))}
-                          {plan.features.length > 4 && (
+                          {plan.features.length > 3 && (
                             <li>
                               <button
                                 type="button"
@@ -676,7 +692,7 @@ const markApplicationStarted = () => {
                                 {expandedPlan === plan.id ? (
                                   <>Show less <ChevronDown className="w-3 h-3 rotate-180" /></>
                                 ) : (
-                                  <>+{plan.features.length - 4} more features <ChevronDown className="w-3 h-3" /></>
+                                  <>+{plan.features.length - 3} more features <ChevronDown className="w-3 h-3" /></>
                                 )}
                               </button>
                             </li>
@@ -976,7 +992,7 @@ const markApplicationStarted = () => {
           </AnimatePresence>
 
           {/* Navigation Buttons - Desktop */}
-          <div className="hidden md:flex justify-between mt-8 pt-6 border-t border-border">
+          <div ref={continueButtonRef} className="hidden md:flex justify-between mt-8 pt-6 border-t border-border">
             <Button
               type="button"
               variant="outline"
@@ -1017,7 +1033,13 @@ const markApplicationStarted = () => {
 
         {/* Mobile Sticky Navigation - only show when form is in viewport */}
         {isFormVisible && (
-          <div className="fixed bottom-0 left-0 right-0 p-4 bg-background/95 backdrop-blur-sm border-t border-border md:hidden z-50">
+          <div 
+            className={`fixed bottom-0 left-0 right-0 p-4 backdrop-blur-sm border-t md:hidden z-50 transition-colors ${
+              currentStep === 4 && selectedPlan
+                ? "bg-primary/10 border-primary/30"
+                : "bg-background/95 border-border"
+            }`}
+          >
             <div className="flex gap-3 max-w-4xl mx-auto">
               {currentStep > 1 && (
                 <Button
@@ -1035,7 +1057,11 @@ const markApplicationStarted = () => {
                 <Button 
                   type="button" 
                   onClick={nextStep} 
-                  className="flex-1 py-6 text-base font-semibold"
+                  className={`flex-1 py-6 text-base font-semibold transition-all ${
+                    currentStep === 4 && selectedPlan
+                      ? "animate-pulse ring-2 ring-primary ring-offset-2"
+                      : ""
+                  }`}
                 >
                   Continue
                   <ChevronRight className="w-4 h-4 ml-2" />
