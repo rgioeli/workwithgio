@@ -294,7 +294,7 @@ export function ApplicationForm({ progressRef }: ApplicationFormProps) {
         </div> */}
 
         {/* Progress Bar */}
-        <div ref={progressRef || stepHeaderRef} className="mt-6">
+        <div ref={progressRef || stepHeaderRef} className="mt-6 scroll-mt-4">
           <div className="flex justify-between text-xs text-muted-foreground mb-2">
             <span>Step {currentStep} of {steps.length}</span>
             <span>{Math.round((currentStep / steps.length) * 100)}% Complete</span>
